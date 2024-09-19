@@ -63,13 +63,13 @@ async validateUser(username: string, password: string): Promise<UserWithPermissi
 
   async generateAccessToken(user:any)
   {
-    const payload = { username: user.username, sub: user.userId, permissions:user.Permissions };
+    const payload = { username: user.username, sub: user.userId, permissions:user.permissions };
     return  this.jwtService.sign(payload,{ expiresIn: '60s' });
   }
 
   async generateRefreshToken(user:any)
   {
-    const payload = { username: user.username, sub: user.userId, permissions:user.Permissions };
+    const payload = { username: user.username, sub: user.userId, permissions:user.permissions };
     return  this.jwtService.sign(payload,{ expiresIn: '7d' });
     }
 
