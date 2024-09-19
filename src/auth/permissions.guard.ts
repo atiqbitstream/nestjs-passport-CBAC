@@ -5,7 +5,7 @@ import { Permission, PERMISSIONS_KEY } from './permissions.decorator';
 
 
 @Injectable()
-export class RolesGuard implements CanActivate {
+export class PermissionsGuard implements CanActivate {
 
 
   constructor(private reflector: Reflector) {}
