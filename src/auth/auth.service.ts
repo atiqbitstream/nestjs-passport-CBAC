@@ -1,3 +1,4 @@
+import { Permissions } from './permissions.decorator';
 import { UsersService } from './../users/users.service';
 import * as bcrypt from 'bcrypt';
 import { Injectable } from '@nestjs/common';
@@ -39,13 +40,13 @@ async validateUser(username: string, password: string): Promise<any> {
 
   async generateAccessToken(user:any)
   {
-    const payload = { username: user.username, sub: user.userId, role: user.role };
+    const payload = { username: user.username, sub: user.userId, permissions:user.Permissions };
     return  this.jwtService.sign(payload,{ expiresIn: '60s' });
   }
 
   async generateRefreshToken(user:any)
   {
-    const payload = { username: user.username, sub: user.userId, role:user.roles };
+    const payload = { username: user.username, sub: user.userId, permissions:user.Permissions };
     return  this.jwtService.sign(payload,{ expiresIn: '7d' });
     }
 
