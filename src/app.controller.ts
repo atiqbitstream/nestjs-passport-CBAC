@@ -6,7 +6,7 @@ import { LocalAuthGuard } from './auth/local-auth.guard';
 import { AuthService } from './auth/auth.service';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { RolesGuard } from './auth/roles.guard';
-import { Roles } from './auth/roles.decorator';
+import { Roles } from './auth/permissions.decorator';
 import { Role } from './auth/roles.enum';
 
 
