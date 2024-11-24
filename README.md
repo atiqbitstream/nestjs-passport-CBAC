@@ -106,7 +106,7 @@ Any additional information goes here
 
 ## Author
 
-- [AtiqBytes](https://github.com/atiqbitstream)
+- [Atiqbitstream](https://github.com/atiqbitstream)
 ## Badges
 
 Add badges from somewhere like: [shields.io](https://shields.io/)
@@ -428,7 +428,7 @@ test coverage:
 Clone the project
 
 ```bash
-  git clone https://github.com/AtiqBytes/passport-jwt-nestjs.git
+  git clone https://github.com/atiqbitstream/passport-jwt-nestjs.git
 ```
 
 Go to the project directory
