@@ -106,7 +106,7 @@ Any additional information goes here
 
 ## Author
 
-- [AtiqBytes](https://github.com/AtiqBytes)
+- [AtiqBytes](https://github.com/atiqbitstream)
 ## Badges
 
 Add badges from somewhere like: [shields.io](https://shields.io/)
@@ -256,7 +256,7 @@ Check that the refresh token has a longer expiresIn value than the access token,
 
 ## Feedback
 
-If you have any feedback, please reach out to me at https://www.linkedin.com/in/atiq-ur-rehman-1314712aa/
+If you have any feedback, please reach out to me at 
 
 
 ## 🚀 About Me
@@ -266,12 +266,12 @@ wokring in Angular |
 NestJs | 
 Django |
 Amazon Aws
-# Hi, I'm Atiq Ur Rehman! 👋
+# Hi, I'm Atiq Khan! 👋
 
 
 ## 🔗 Links
-[![portfolio](https://img.shields.io/badge/my_portfolio-000?style=for-the-badge&logo=ko-fi&logoColor=white)](https://github.com/AtiqBytes)
-[![linkedin](https://img.shields.io/badge/linkedin-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/atiq-ur-rehman-1314712aa/)
+[![portfolio](https://img.shields.io/badge/my_portfolio-000?style=for-the-badge&logo=ko-fi&logoColor=white)](https://github.com/atiqbitstream)
+[![linkedin](https://img.shields.io/badge/linkedin-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)]()
 
 
 
