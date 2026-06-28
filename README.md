@@ -1,451 +1,209 @@
+<div align="center">
 
-# NestJs Authentication & Authorization With passportjs & Role Based Access
+# nestjs-passport-CBAC
 
-Are you tired of worrying about user authentication and authorization in your NestJS applications and want role-based authorization? Look no further! This project provides a comprehensive, battle-tested solution for managing user access and permissions, so you can focus on building amazing apps.
+![NestJS](https://img.shields.io/badge/NestJS-10-E0234E?logo=nestjs&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)
+![Passport](https://img.shields.io/badge/Passport-JWT%20%2B%20Local-34E27A?logo=passport&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-TypeORM-4169E1?logo=postgresql&logoColor=white)
+![License](https://img.shields.io/badge/license-MIT-green)
 
-Built for developers, by developers
+**A NestJS example that protects routes with claim-based (permission) access control using Passport, JWT, and PostgreSQL.**
 
-Whether you're a solo dev or part of a team, this project is designed to help you:
+<!-- TODO: screenshot/GIF - a Postman run showing login returning a JWT, then a 200 on /admin-only and a 403 on a denied route -->
 
-1. Secure your app with robust authentication and authorization
+</div>
 
-2. Scale your solution with confidence
+> Note: This is a learning and reference project. It shows one clear way to wire up claim-based access control in NestJS. Read the Roadmap and Security notes before using any of it in production.
 
-3. Customize access control to fit your unique needs
+## Table of Contents
 
+- [About](#about)
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Architecture](#architecture)
+- [Getting Started](#getting-started)
+- [API Endpoints](#api-endpoints)
+- [Project Structure](#project-structure)
+- [Configuration](#configuration)
+- [Security Notes](#security-notes)
+- [Roadmap](#roadmap)
+- [Contributing](#contributing)
+- [License](#license)
 
-## API Reference
+## About
 
-#### Create a User
+This project is a small NestJS API that demonstrates claim-based access control (CBAC), also called permission-based access control. Instead of checking a single role on each route, the app gives every signed-in account a list of permissions and then checks those permissions when a request hits a protected route.
 
-```http
-  POST  http://localhost:3000/users/signup
-```
+Authentication is handled by Passport. A local strategy validates a username and password at login, and a JWT strategy validates the bearer token on later requests. When a user logs in, their role (`user` or `admin`) is mapped to a set of permissions, and that permission list is placed inside the JWT. Each protected route declares the permissions it needs with a `@Permissions()` decorator, and a `PermissionsGuard` allows the request only when the token carries every required permission.
 
-| Parameter | Type     | Description                |
-| :-------- | :------- | :------------------------- |
-| `username,password,email` | `string` | **Required**. Running database |
-
-#### Login User
-
-```http
-  POST  http://localhost:3000/auth/login
-```
-
-| Parameter | Type     | Description                       |
-| :-------- | :------- | :-------------------------------- |
-| `username,password`      | `string` | **Required**.  |
-
-#### View  Profile
-
-```http
-  GET http://localhost:3000/profile
-```
-
-| Parameter | Type     | Description                       |
-| :-------- | :------- | :-------------------------------- |
-| `username,password`      | `string` | **Required**. Jwt Access Token |
-
-#### View Protected Route (Based On Role based Access)
-
-```http
-  POST http://localhost:3000/profile
-```
-
-| Parameter | Type     | Description                       |
-| :-------- | :------- | :-------------------------------- |
-| `username,password`      | `string` | **Required**. Jwt Bearer Token |
-
-
-#### Create an Admin
-
-```http
-  POST  http://localhost:3000/admin/signup
-```
-
-| Parameter | Type     | Description                |
-| :-------- | :------- | :------------------------- |
-| `username,password,email` | `string` | **Required**. Running database |
-
-#### Login Admin
-
-```http
-  POST   http://localhost:3000/auth/login
-```
-
-| Parameter | Type     | Description                       |
-| :-------- | :------- | :-------------------------------- |
-| `username,password`      | `string` | **Required**.  |
-
-#### View  Profile
-
-```http
-  GET http://localhost:3000/profile
-```
-
-| Parameter | Type     | Description                       |
-| :-------- | :------- | :-------------------------------- |
-| `username,password`      | `string` | **Required**. Jwt Access Token |
-
-#### View Protected Route (Based On Role based Access)
-
-```http
-  POST http://localhost:3000/profile
-```
-
-| Parameter | Type     | Description                       |
-| :-------- | :------- | :-------------------------------- |
-| `username,password`      | `string` | **Required**. Jwt Bearer Token |
-
-
-
-## Appendix
-
-Any additional information goes here
-
-
-## Author
-
-- [Atiqbitstream](https://github.com/atiqbitstream)
-## Badges
-
-Add badges from somewhere like: [shields.io](https://shields.io/)
-
-[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
-[![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-yellow.svg)](https://opensource.org/licenses/)
-[![AGPL License](https://img.shields.io/badge/license-AGPL-blue.svg)](http://www.gnu.org/licenses/agpl-3.0)
-
-
-## Contributing
-
-Contributions are always welcome!
-
-See `contributing.md` for ways to get started.
-
-Please adhere to this project's `code of conduct`.
-
-
-## Demo
-
-
-
-## Deployment
-
-To deploy this project run
-
-```bash
-  npm run start:dev
-```
-
-
-## Documentation
-
-1.  [Jwt](https://jwt.io/)
-
-2.  [Passport Js](https://docs.nestjs.com/recipes/passport)
-
-
-## Environment Variables
-
-To run this project, you will need to add the following environment variables to your .env file. You can customize it the way you want :
-
-`DB_PORT='5432'`
-
-`DB_USERNAME='postgres'`
-
-`DB_PASSWORD='root'`
-
-`DB_DATABASE='passportdb'`
-
-
-
-
-
-
-
-
-#### Q: Why am I getting a "403 Forbidden" error when accessing a protected route?
-
-A: This usually happens when the user does not have the required role to access the route. Ensure that the `@Roles()` decorator is correctly applied to the route, and that the RolesGuard is verifying the roles correctly. Check that the user's role is included in the JWT payload when generating the token in `auth.service.ts`. Log the roles in the RolesGuard to ensure the correct roles are being checked, and verify that the roles are passed as an array in both the JWT payload and the user object.
-
-#### Q: Why is roles.includes or roles.find throwing an error in RolesGuard?
-
-A: This error occurs when roles is not an array, and you're trying to call array methods like includes() or find() on a non-array value. Ensure that the roles passed from the `@Roles()` decorator and in the JWT payload are arrays. In the RolesGuard, add a check to ensure roles is an array using `Array.isArray()`:
-
-
-```typescript
-if (!roles || !Array.isArray(roles)) {
-  return true;  // No roles required, allow access
-}
-```
-
-#### Q: Why is the role not included in the JWT token after login?
-
-A: This happens when the role is not included in the payload when generating the JWT token in AuthService. Ensure that the role is part of the user object when generating the JWT in auth.service.ts:
-
-```typescript
-const payload = { username: user.username, sub: user.userId, roles: [user.role] };
-```
-
-Also, make sure that the roles are properly included when validating the token in jwt.strategy.ts:
-```typescript
-return { userId: payload.sub, username: payload.username, roles: payload.roles };
-```
-
-#### Q: Why is the admin login not working while user login works?
-
-A: This can happen if the authentication logic is only checking the UsersService and not the AdminService when validating the user credentials. Ensure that in auth.service.ts, you're checking both the UsersService for regular users and the AdminService for admins:
-
-```typescript
-const user = await this.userService.findOne(username);
-if (!user) {
-  const admin = await this.adminService.findOne(username);
-  // Check admin login
-}
-```
-
-#### Q: Why is the RolesGuard always receiving ['admin'] in the roles variable, even for users?
-
-A: This happens if the @Roles() decorator is hardcoded or incorrectly set, causing the guard to always receive the same role. Ensure that the @Roles() decorator is correctly applied on routes and dynamically sets roles based on the expected access level:
-```typescript
-@Roles('admin')  // For admin routes
-@Roles('user')   // For user routes
-```
-
-#### Q: Why is the user.roles field undefined in the RolesGuard?
-
-A: This occurs if the roles are not being properly set or returned in the validate method of jwt.strategy.ts. Ensure that the validate function in jwt.strategy.ts returns the roles array from the JWT payload:
-
-```typescript
-async validate(payload: any) {
-  return { userId: payload.sub, username: payload.username, roles: payload.roles };
-}
-```
-
-#### Q: Why am I getting Unauthorized during login even though the credentials are correct?
-
-A: This might happen if the validateUser method in AuthService is not correctly validating credentials or if the password comparison using bcrypt fails. Verify that the user exists in the database by checking the UsersService and AdminService in validateUser, and ensure that bcrypt.compare() is properly comparing the plain-text password with the hashed password stored in the database.
-
-#### Q: Why is the JWT token expiring too quickly (after 60 seconds)?
-
-A: The expiration time of the JWT token is controlled by the expiresIn option in AuthService. If set too low, the token will expire quickly. Adjust the expiresIn value in the generateAccessToken method to a higher value if needed:
-
-```typescript
-return this.jwtService.sign(payload, { expiresIn: '3600s' });  // 1 hour
-```
-
-#### Q: Why is the refresh token not working properly or not returning a new access token?
-
-A: This could happen if the refresh token is not validated correctly or if the validateRefreshToken method in AuthService is not correctly implemented. Ensure that the refresh token is properly validated in validateRefreshToken:
-
-```typescript
-const payload = this.jwtService.verify(token);
-```
-Check that the refresh token has a longer expiresIn value than the access token, and ensure the correct user data is returned from the refresh token validation.
-
+There are two account types, `User` and `Admin`, each stored in PostgreSQL through TypeORM. Both can sign up and log in through the same auth flow.
 
 ## Features
 
-- Role-Based Access Control
-- JSON Web Token Authentication
-- Customizable Authentication Flow
-- Environment Variable Configuration
-- Database Support
-- Error Handling and Logging
-- Cross-Platform Compatibility
+- Claim-based access control with a `@Permissions()` decorator and a `PermissionsGuard`.
+- Passport local strategy for username and password login.
+- Passport JWT strategy for stateless bearer-token auth on protected routes.
+- Permissions encoded directly in the JWT payload, so route checks need no extra database lookup.
+- Separate `User` and `Admin` entities that share one login flow.
+- Password hashing with bcrypt.
+- Access token plus refresh token, with a refresh endpoint to mint a new access token.
+- PostgreSQL persistence through TypeORM.
 
-## Feedback
+## Tech Stack
 
-If you have any feedback, please reach out to me at 
+| Layer | Technology |
+|-------|-----------|
+| Runtime | Node.js |
+| Language | TypeScript |
+| Framework | NestJS 10 |
+| Auth | Passport (`passport-local`, `passport-jwt`), `@nestjs/jwt` |
+| Hashing | bcrypt |
+| Database | PostgreSQL |
+| ORM | TypeORM |
+| Testing | Jest, Supertest |
 
+## Architecture
 
-## 🚀 About Me
-I'm a full stack developer...
+The diagram below shows how a request flows through login and then through a permission-protected route.
 
-wokring in Angular | 
-NestJs | 
-Django |
-Amazon Aws
-# Hi, I'm Atiq Khan! 👋
+```mermaid
+flowchart TD
+    Client[Client] -->|POST /auth/login| Local[LocalAuthGuard + LocalStrategy]
+    Local --> Validate[AuthService.validateUser]
+    Validate --> DB[(PostgreSQL via TypeORM)]
+    Validate -->|map role to permissions| Token[Sign JWT with permissions]
+    Token -->|access_token + refresh_token| Client
 
+    Client -->|GET protected route with Bearer token| JwtG[JwtAuthGuard + JwtStrategy]
+    JwtG -->|attach user + permissions| PermG[PermissionsGuard]
+    PermG -->|reads @Permissions metadata| Check{Token has every required permission?}
+    Check -->|yes| Handler[Route handler responds]
+    Check -->|no| Denied[403 Forbidden]
+```
 
-## 🔗 Links
-[![portfolio](https://img.shields.io/badge/my_portfolio-000?style=for-the-badge&logo=ko-fi&logoColor=white)](https://github.com/atiqbitstream)
-[![linkedin](https://img.shields.io/badge/linkedin-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)]()
+## Getting Started
 
-
-
-## Other Common Github Profile Sections
-👩‍💻 I'm currently working on Backend
-
-🧠 I'm currently learning NestJs
-
-👯‍♀️ I'm looking to collaborate on full Stack Projects
-
-🤔 I'm looking for help with getting Internship
-
-
-
-## 🛠 Skills
-Typescript, Javascript, HTML, CSS, Python
-
-
-## Installation
-
-Install my-project with npm
+### Prerequisites
 
 ```bash
-  cd my-project
-  npm install 
-  
+node --version   # Node.js 18 or newer is recommended
+npm --version
+# A running PostgreSQL instance and a database for this app
 ```
-    
-## Lessons Learned
 
-## Authorization with Enum Files:
+### Installation
 
-Files Involved: role.enum.ts
-- I learned that defining roles in an enum file like roles.enum.ts allows for effective role management.
--  By using enums, I can define roles such as admin and user and integrate these roles into the system consistently.
--   This ensures that roles are standardized across the application, especially when used in role-based access control.
+```bash
+git clone https://github.com/atiqbitstream/nestjs-passport-CBAC.git
+cd nestjs-passport-CBAC
+npm install
+```
 
-## Role Management in User and Admin Entities:
+Create a `.env` file in the project root with your database settings (see [Configuration](#configuration)).
 
-Files Involved: user.entity.ts, admin.entity.ts
+### Run
 
-- I added a role column to both the User and Admin entities.
-- This column helps assign a specific role to each user or admin in the system.
--  When retrieving users from the database, this role is included in the JWT token to handle role-based authorization.
+```bash
+npm run start:dev
+```
 
-## Defining Roles in DTOs:
+The server starts on `http://localhost:3000`. TypeORM runs with `synchronize: true`, so the `User` and `Admin` tables are created automatically on first run.
 
-Files Involved: create-user.dto.ts, create-admin.dto.ts
+### Tests
 
-- I ensured that when creating users or admins, the role attribute is included in the DTOs (Data Transfer Objects).
--  This guarantees that the role is part of the request structure when creating new users or admins, making the role available for authorization checks.
+```bash
+npm run test       # unit tests
+npm run test:e2e   # end-to-end tests
+npm run test:cov   # coverage
+```
 
-##  Role Decorator and Guard:
+## API Endpoints
 
-Files Involved: roles.decorator.ts, roles.guard.ts
-- I created a Roles decorator (roles.decorator.ts) to specify which roles are allowed to access specific routes. 
-- The decorator allows me to define which roles (e.g., admin or user) are required to access a route.
-- The RolesGuard (roles.guard.ts) then enforces these role requirements.
--  Initially, I faced issues when the guard failed due to roles.includes not being a function, but I fixed this by ensuring roles was always an array.
--  
-## Handling Admin and User Login with JWT:
+All routes are served from `http://localhost:3000`.
 
-Files Involved: auth.service.ts, jwt.strategy.ts, local.strategy.ts
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| POST | `/users/signup` | None | Create a user account (`username`, `password`, `email`, `role`). |
+| POST | `/admin/signup` | None | Create an admin account (`username`, `password`, `email`, `role`). |
+| POST | `/auth/login` | Local | Log in with `username` and `password`; returns `access_token` and `refresh_token`. |
+| GET | `/profile` | JWT | Return the decoded user from the token. |
+| GET | `/admin-only` | JWT + Permissions | Requires `GENERAL_ADMIN_PERMISSION`. |
+| GET | `/user-only` | JWT + Permissions | Requires `GENERAL_USER_PERMISSION`. |
+| GET | `/admin-or-user` | JWT + Permissions | Requires both general permissions. |
+| POST | `/refresh` | Refresh token | Send `refresh_token` in the body to get a new `access_token`. |
 
-- I implemented a system where both admins and users can log in using the same authentication service.
--  Initially, I faced an issue where only user logins were working because I was only checking UsersService for validation.
--   I solved this by adding a check for AdminService in AuthService, ensuring that both admins and users can log in and receive their respective JWT tokens.
+Send the access token as a header on protected routes:
 
-## Issues Faced:
+```http
+Authorization: Bearer <access_token>
+```
 
-## Fixing JWT Payload and Role Encoding:
+### Permissions
 
-Files Involved: auth.service.ts, jwt.strategy.ts
+Permissions are defined as an enum in `src/auth/permissions.decorator.ts`:
 
-- I encountered an issue where the role was not included in the JWT payload, which caused the role guard to fail.
--  To resolve this, I updated the generateAccessToken and generateRefreshToken methods in auth.service.ts to include the user's role in the JWT payload.
--   Additionally, I fixed the JwtStrategy to ensure the roles were extracted correctly from the token payload.
+- `GENERAL_ADMIN_PERMISSION`
+- `GENERAL_USER_PERMISSION`
+- `BLOCK_USER`
 
-## Role-Based Route Protection and 403 Forbidden Issue:
+At login, an `admin` account receives all three permissions, and a `user` account receives `GENERAL_USER_PERMISSION`.
 
-Files Involved: app.controller.ts, roles.guard.ts
+## Project Structure
 
-- When trying to access the /profile route, I encountered a 403 Forbidden error even though the correct roles were assigned.
--  This was due to the roles not being properly included in the JWT or not being correctly handled in the JwtStrategy.
--   Once I ensured that the roles were properly extracted and passed through the RolesGuard, the issue was resolved, and admins were able to access admin-only routes.
+```text
+src/
+  main.ts                       App bootstrap, listens on port 3000
+  app.module.ts                 Root module, TypeORM and config setup
+  app.controller.ts             Login, profile, and permission-protected routes
+  auth/
+    auth.module.ts              Passport and JWT wiring
+    auth.service.ts             Credential check, permission mapping, token signing
+    local.strategy.ts           Username and password validation
+    jwt.strategy.ts             Bearer token validation
+    local-auth.guard.ts         Guard for the local strategy
+    jwt-auth.guard.ts           Guard for the JWT strategy
+    permissions.decorator.ts    @Permissions decorator and Permission enum
+    permissions.guard.ts        Checks required permissions against the token
+    constants.ts                JWT secret (placeholder, see Security Notes)
+    userWithPermission.dto.ts   User shape with an attached permissions list
+  users/                        User entity, service, controller, signup DTO
+  Admin/                        Admin entity, service, controller, signup DTO
+```
 
-##  Improper Roles Handling in Roles Guard:
+## Configuration
 
-Files Involved: roles.guard.ts
+Add a `.env` file in the project root. These variables feed the TypeORM PostgreSQL connection in `app.module.ts`.
 
-- The RolesGuard initially threw errors like roles.includes is not a function.
--  This happened because roles was not always an array.
--  After adding checks to ensure roles was an array, I was able to resolve the issue and properly enforce role-based access control. I also learned to log the roles and user.roles to debug these types of issues effectively.
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `DB_HOST` | PostgreSQL host | `localhost` |
+| `DB_PORT` | PostgreSQL port | `5432` |
+| `DB_USERNAME` | Database user | `postgres` |
+| `DB_PASSWORD` | Database password | `your_password` |
+| `DB_DATABASE` | Database name | `passportdb` |
 
-## JWT Role Handling and Forbidden Resource:
+## Security Notes
 
-Files Involved: roles.guard.ts, jwt.strategy.ts
+This is a demo, so a few settings are convenient rather than safe for production:
 
-- Another issue arose when I consistently received a Forbidden resource error after login.
-- The problem was that the roles in the JWT payload were not correctly handled in the RolesGuard or JwtStrategy.
--  I learned to ensure that the roles are properly encoded in the JWT and extracted correctly during validation to allow access to routes based on roles.
+- The JWT secret is a hardcoded placeholder in `src/auth/constants.ts`. Move it to an environment variable and use a strong, secret value before any real deployment.
+- TypeORM runs with `synchronize: true`, which can change your schema automatically. Use migrations in production.
+- The access token lifetime is 60 seconds, which is short for normal use. Adjust the `expiresIn` value in `auth.service.ts` and the JWT module setup to fit your needs.
 
-## Testing Role Guards and Fixing Access Issues:
+## Roadmap
 
-Files Involved: app.controller.ts, roles.guard.ts
+- [ ] Read the JWT secret from an environment variable instead of `constants.ts`.
+- [ ] Add input validation with `class-validator` on the signup DTOs.
+- [ ] Persist permissions on the entities so they are not derived only from role at login.
+- [ ] Replace `synchronize: true` with TypeORM migrations.
+- [ ] Add a logout and refresh-token revocation flow.
+- [ ] Ship a `.env.example` file.
 
-- After resolving the role-based access issues, I tested the functionality by creating separate routes for users and admins, applying the @Roles() decorator to protect the routes.
--  By using Postman to test login and accessing the protected routes, I confirmed that only admins could access admin-only routes and users could not.
+## Contributing
 
-  
-  
-
+Contributions and suggestions are welcome. Open an issue to discuss a change, or send a pull request with a clear description of what it does.
 
 ## License
 
-[MIT](https://choosealicense.com/licenses/mit/)
-
-
-![Logo](https://docs.nestjs.com/assets/logo-small-gradient.svg)
-
-
-## Related
-
-Here are some related projects
-
-[Awesome README](https://github.com/matiassingers/awesome-readme)
-
-
-## Running Tests
-
-To run tests, run the following command
-
-```bash
-  npm run test
-```
-unit tests : 
- ```
- 
- npm run test
- ```
-
- e2e tests : 
-```
-$ npm run test:e2e
-```
-test coverage: 
-```
-
- npm run test:cov
-```
-
-## Run Locally
-
-Clone the project
-
-```bash
-  git clone https://github.com/atiqbitstream/passport-jwt-nestjs.git
-```
-
-Go to the project directory
-
-```bash
-  cd my-project
-```
-
-Install dependencies
-
-```bash
-  npm install
-```
-
-Start the server
-
-```bash
-  npm run start:dev
-```
-
+Distributed under the MIT License. See [LICENSE](LICENSE) for details.
